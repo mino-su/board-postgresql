@@ -32,7 +32,7 @@ public class PostController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<Post> getPostByPostId(@PathVariable Long postId) {
-        log.info("GET /api/v1/posts/{}",postId);
+//        log.info("GET /api/v1/posts/{}",postId);
         var post = postService.getPostByPostId(postId);
         return ResponseEntity.ok(post);
 
@@ -41,14 +41,14 @@ public class PostController {
     // POST /posts
     @PostMapping("")
     public ResponseEntity<Post> createPost(@RequestBody PostPostRequestBody postPostRequestBody) {
-        log.info("POST /api/v1/posts");
+//        log.info("POST /api/v1/posts");
         var post = postService.createPost(postPostRequestBody);
         return ResponseEntity.ok(post);
     }
 
     @PatchMapping("/{postId}")
     public ResponseEntity<Post> updatePost(@PathVariable Long postId, @RequestBody PostPostRequestBody postPostRequestBody) {
-        log.info("PATCH /api/v1/posts/{}",postId);
+//        log.info("PATCH /api/v1/posts/{}",postId);
         var post = postService.updatePost(postId, postPostRequestBody);
 
         return ResponseEntity.ok(post);
@@ -57,7 +57,7 @@ public class PostController {
 
     @DeleteMapping("/{postId}")
     public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
-        log.info("DELETE /api/v1/posts/{}",postId);
+//        log.info("DELETE /api/v1/posts/{}",postId);
         postService.deletePost(postId);
         return ResponseEntity.noContent().build();
     }
