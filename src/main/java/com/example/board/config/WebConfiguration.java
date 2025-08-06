@@ -43,7 +43,7 @@ public class WebConfiguration {
                 .authorizeHttpRequests(
                         (requests) ->
                                 requests
-                                        .requestMatchers(HttpMethod.POST,"/api/v1/users")
+                                        .requestMatchers(HttpMethod.POST,"/api/*/users","/api/*/users/authenticate")
                                         .permitAll()
                                         // 회원가입만 허용
                                         .anyRequest().authenticated())

@@ -1,4 +1,4 @@
-package com.example.board.model.post;
+package com.example.board.model.user;
 
 import jakarta.validation.constraints.NotEmpty;
 

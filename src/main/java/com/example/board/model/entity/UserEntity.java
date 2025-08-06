@@ -17,7 +17,8 @@ import java.util.Random;
 
 
 @Entity
-@Table(name="\"user\"")
+@Table(name="\"user\"", indexes = {@Index(name="user_username_idx",columnList = "username",unique = true)})
+// unique= 중복생성 x
 @Getter
 @Setter
 @NoArgsConstructor
