@@ -1,19 +1,14 @@
 package com.example.board.controller;
 
-import com.example.board.model.Post;
-import com.example.board.model.PostPostRequestBody;
-import com.example.board.model.entity.PostEntity;
+import com.example.board.model.post.Post;
+import com.example.board.model.post.PostPostRequestBody;
 import com.example.board.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/api/v1/posts")

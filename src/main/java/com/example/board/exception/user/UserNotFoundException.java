@@ -11,4 +11,8 @@ public class UserNotFoundException extends ClientErrorException {
     public UserNotFoundException(Long userId) {
         super(HttpStatus.NOT_FOUND,"User with userId" +userId+ "not found.");
     }
+
+    public UserNotFoundException(String userName) {
+        super(HttpStatus.NOT_FOUND,"User with userName" +userName+ "not found.");
+    }
 }
