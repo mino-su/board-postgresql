@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -100,6 +101,7 @@ public class UserService implements UserDetailsService {
 
     }
 
+    @Transactional
     public User follow(String username, UserEntity currentUser) {
         var following = userEntityRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException(username));
@@ -122,6 +124,7 @@ public class UserService implements UserDetailsService {
 
     }
 
+    @Transactional
     public User unfollow(String username, UserEntity currentUser) {
         var following = userEntityRepository.findByUsername(username).orElseThrow(
                 () -> new UsernameNotFoundException(username));
@@ -134,8 +137,8 @@ public class UserService implements UserDetailsService {
         if (followEntity.isPresent()) {
 
             followEntityRepository.delete(followEntity.get());
-            following.setFollowersCount(Math.max(0,following.getFollowersCount())-1);
-            currentUser.setFollowingsCount(Math.max(0,currentUser.getFollowingsCount())-1);
+            following.setFollowersCount(Math.max(0,following.getFollowersCount()-1));
+            currentUser.setFollowingsCount(Math.max(0,currentUser.getFollowingsCount()-1));
             userEntityRepository.save(currentUser);
             var savedEntity = userEntityRepository.save(following);
             return User.from(savedEntity);
