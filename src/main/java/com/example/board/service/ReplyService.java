@@ -30,6 +30,7 @@ public class ReplyService {
     private final PostEntityRepository postEntityRepository;
 
     private final ReplyEntityRepository replyEntityRepository;
+    private final UserEntityRepository userEntityRepository;
 
 
     public List<Reply> getRepliesByPostId(Long postId) {
@@ -92,4 +93,8 @@ public class ReplyService {
     }
 
 
+    public List<Reply> getRepliesByUser(String username) {
+        var userEntity = userEntityRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return replyEntityRepository.findByUser(userEntity).stream().map(Reply::from).toList();
+    }
 }

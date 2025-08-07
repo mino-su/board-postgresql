@@ -9,8 +9,9 @@ import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @Entity
-@Table(name = "\"follow\"",
-        indexes = {@Index(name = "follow_follower_following_idx", columnList = "follower, following", unique = true)})
+@Table(
+        name = "follow",
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"follower", "following"})})
 @Getter
 @Setter
 @NoArgsConstructor

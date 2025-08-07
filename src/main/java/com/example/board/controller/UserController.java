@@ -2,8 +2,10 @@ package com.example.board.controller;
 
 import com.example.board.model.entity.UserEntity;
 import com.example.board.model.post.Post;
+import com.example.board.model.reply.Reply;
 import com.example.board.model.user.*;
 import com.example.board.service.PostService;
+import com.example.board.service.ReplyService;
 import com.example.board.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,7 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final PostService postService;
+    private final ReplyService replyService;
 
     @PostMapping
     public ResponseEntity<User> signUp(@Valid @RequestBody UserSignUpRequestBody userSignUpRequestBody) {
@@ -34,14 +37,14 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) String query) {
-        var user = userService.getUsers(query);
+    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) String query, Authentication authentication) {
+        var user = userService.getUsers(query, (UserEntity)authentication.getPrincipal());
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<User> getUser(@PathVariable String username) {
-        var user = userService.getUser(username);
+    public ResponseEntity<User> getUser(@PathVariable String username,Authentication authentication) {
+        var user = userService.getUser(username, (UserEntity)authentication.getPrincipal());
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
@@ -61,15 +64,28 @@ public class UserController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("/{username}/replies")
+    public ResponseEntity<List<Reply>> getRepliesByUser(@PathVariable String username) {
+        var replies = replyService.getRepliesByUser(username);
+        return ResponseEntity.ok(replies);
+    }
+
+    @GetMapping("/{username}/liked-users")
+    public ResponseEntity<List<LikedUser>> getLikedUsersByUser(@PathVariable String username, Authentication authentication) {
+        var likedUsers = userService.getLikedUsersByUser(username, (UserEntity) authentication.getPrincipal());
+        return new ResponseEntity<>(likedUsers, HttpStatus.OK);
+    }
+
+
     @GetMapping("/{username}/followers")
-    public ResponseEntity<List<User>> getFollowersByUser(@PathVariable String username) {
-        var followers = userService.getFollowersByUser(username);
+    public ResponseEntity<List<Follower>> getFollowersByUser(@PathVariable String username, Authentication authentication) {
+        var followers = userService.getFollowersByUser(username, (UserEntity) authentication.getPrincipal());
         return new ResponseEntity<>(followers, HttpStatus.OK);
     }
 
     @GetMapping("/{username}/followings")
-    public ResponseEntity<List<User>> getFollowingsByUser(@PathVariable String username) {
-        var followings = userService.getFollowingsByUser(username);
+    public ResponseEntity<List<Follower>> getFollowingsByUser(@PathVariable String username, Authentication authentication) {
+        var followings = userService.getFollowingsByUser(username, (UserEntity)authentication.getPrincipal() );
         return new ResponseEntity<>(followings, HttpStatus.OK);
     }
 
