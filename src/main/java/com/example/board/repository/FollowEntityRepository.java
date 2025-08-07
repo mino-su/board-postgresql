@@ -16,5 +16,5 @@ public interface FollowEntityRepository extends JpaRepository<FollowEntity,Long>
 
     List<FollowEntity> findByFollowing(UserEntity following);
 
-    Optional<FollowEntity> findByFollowerAndFollowing(UserEntity follower, UserEntity following);
+    Optional<FollowEntity> findByFollowerAndFollowing(UserEntity user, UserEntity following);
 }

@@ -7,6 +7,7 @@ import com.example.board.service.PostService;
 import com.example.board.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -32,44 +33,57 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping()
-    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false, name = "query") String query) {
-        var users = userService.getUsers(query);
-        return ResponseEntity.ok(users);
+    @GetMapping
+    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false) String query) {
+        var user = userService.getUsers(query);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @GetMapping("/{username}")
     public ResponseEntity<User> getUser(@PathVariable String username) {
-        var users = userService.getUser(username);
-        return ResponseEntity.ok(users);
+        var user = userService.getUser(username);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @GetMapping("/{username}/posts")
+    public ResponseEntity<List<Post>> getPostsByUsername(@PathVariable String username,Authentication authentication) {
+        var posts = postService.getPostByUsername(username, (UserEntity) authentication.getPrincipal());
+        return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
     @PatchMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username,
-                                           @RequestBody UserPatchRequestBody userPatchRequestBody,
-                                           Authentication authentication) {
-        var users = userService.updateUser(username, userPatchRequestBody, (UserEntity) authentication.getPrincipal());
-        return ResponseEntity.ok(users);
+    public ResponseEntity<User> updateUser(
+            @PathVariable String username,
+            @RequestBody UserPatchRequestBody requestBody,
+            Authentication authentication) {
+        var user =
+                userService.updateUser(username, requestBody, (UserEntity) authentication.getPrincipal());
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @GetMapping("/{username}/followers")
+    public ResponseEntity<List<User>> getFollowersByUser(@PathVariable String username) {
+        var followers = userService.getFollowersByUser(username);
+        return new ResponseEntity<>(followers, HttpStatus.OK);
+    }
 
-    @GetMapping("/{username}/posts")
-    public ResponseEntity<List<Post>> getPostByUsername(@PathVariable String username) {
-        var posts = postService.getPostByUsername(username);
-        return ResponseEntity.ok(posts);
+    @GetMapping("/{username}/followings")
+    public ResponseEntity<List<User>> getFollowingsByUser(@PathVariable String username) {
+        var followings = userService.getFollowingsByUser(username);
+        return new ResponseEntity<>(followings, HttpStatus.OK);
     }
 
     @PostMapping("/{username}/follows")
     public ResponseEntity<User> follow(@PathVariable String username, Authentication authentication) {
-        var user = userService.follow(username, (UserEntity )authentication.getPrincipal());
-        // 팔로우 하는 대상, 팔로우 하는 주체
-        return ResponseEntity.ok(user);
+        var user = userService.follow(username, (UserEntity) authentication.getPrincipal());
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @DeleteMapping("/{username}/follows")
-    public ResponseEntity<User> unfollow(@PathVariable String username, Authentication authentication) {
-        var user = userService.unfollow(username, (UserEntity )authentication.getPrincipal());
-        // 팔로우 취소 하는 대상, 팔로우 취소 하는 주체
-        return ResponseEntity.ok(user);
+    public ResponseEntity<User> unfollow(
+            @PathVariable String username, Authentication authentication) {
+        var user = userService.unfollow(username, (UserEntity) authentication.getPrincipal());
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
+
 }

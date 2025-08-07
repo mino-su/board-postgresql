@@ -74,12 +74,11 @@ public class UserService implements UserDetailsService {
         }
         return userEntities.stream().map(User::from).toList();
     }
-    public User getUser(String username) {
-        var userEntity = userEntityRepository
-                .findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException(username));
 
-        return User.from(userEntity);
+    public User getUser(String username) {
+        var user =
+                userEntityRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+        return User.from(user);
     }
 
     public User updateUser(String username, UserPatchRequestBody userPatchRequestBody, UserEntity currentUser) {
@@ -149,7 +148,21 @@ public class UserService implements UserDetailsService {
     }
 
 
+    public List<User> getFollowersByUser(String username) {
+        var following = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
 
+        var followerEntities = followEntityRepository.findByFollower(following);
 
+        return followerEntities.stream().map(it -> User.from(it.getFollower())).toList();
+    }
 
+    public List<User> getFollowingsByUser(String username) {
+        var follower = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
+
+        var followingsEntities = followEntityRepository.findByFollowing(follower);
+
+        return followingsEntities.stream().map(it -> User.from(it.getFollowing())).toList();
+    }
 }

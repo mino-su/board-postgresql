@@ -10,7 +10,7 @@ public record User(
         String profile,
         String description,
         Long followersCount,
-        Long followingCcount,
+        Long followingsCount,
         ZonedDateTime createdDateTime,
         ZonedDateTime updatedDateTime
 ) {

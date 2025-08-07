@@ -10,8 +10,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "\"follow\"",
-        indexes = {
-                @Index(name = "follow_follower_following_idx", columnList = "follower_following",unique = true)})
+        indexes = {@Index(name = "follow_follower_following_idx", columnList = "follower, following", unique = true)})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -27,7 +26,7 @@ public class FollowEntity {
 
 
     @ManyToOne
-    @JoinColumn(name="follower")
+    @JoinColumn(name = "follower")
     private UserEntity follower;
 
     @ManyToOne
