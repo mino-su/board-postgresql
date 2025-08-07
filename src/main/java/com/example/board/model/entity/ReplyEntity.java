@@ -19,7 +19,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE  reply SET deleteddatetime = CURRENT_TIMESTAMP WHERE replyid= ? ")
+@SQLDelete(sql = "UPDATE \"reply\" SET deleteddatetime = CURRENT_TIMESTAMP WHERE replyid= ? ")
 @SQLRestriction("deleteddatetime IS NULL")
 public class ReplyEntity {
 

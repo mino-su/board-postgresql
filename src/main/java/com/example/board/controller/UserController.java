@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false,name = "query") String query) {
+    public ResponseEntity<List<User>> getUsers(@RequestParam(required = false, name = "query") String query) {
         var users = userService.getUsers(query);
         return ResponseEntity.ok(users);
     }
@@ -48,15 +48,28 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable String username,
                                            @RequestBody UserPatchRequestBody userPatchRequestBody,
                                            Authentication authentication) {
-        var users = userService.updateUser(username, userPatchRequestBody, (UserEntity)authentication.getPrincipal());
+        var users = userService.updateUser(username, userPatchRequestBody, (UserEntity) authentication.getPrincipal());
         return ResponseEntity.ok(users);
     }
 
 
     @GetMapping("/{username}/posts")
     public ResponseEntity<List<Post>> getPostByUsername(@PathVariable String username) {
-       var posts =  postService.getPostByUsername(username);
+        var posts = postService.getPostByUsername(username);
         return ResponseEntity.ok(posts);
     }
 
+    @PostMapping("/{username}/follows")
+    public ResponseEntity<User> follow(@PathVariable String username, Authentication authentication) {
+        var user = userService.follow(username, (UserEntity )authentication.getPrincipal());
+        // 팔로우 하는 대상, 팔로우 하는 주체
+        return ResponseEntity.ok(user);
+    }
+
+    @DeleteMapping("/{username}/follows")
+    public ResponseEntity<User> unfollow(@PathVariable String username, Authentication authentication) {
+        var user = userService.unfollow(username, (UserEntity )authentication.getPrincipal());
+        // 팔로우 취소 하는 대상, 팔로우 취소 하는 주체
+        return ResponseEntity.ok(user);
+    }
 }

@@ -1,12 +1,17 @@
 package com.example.board.service;
 
+import com.example.board.exception.follow.FollowAlreadyExistException;
+import com.example.board.exception.follow.FollowNotExistException;
+import com.example.board.exception.follow.InvalidFollowException;
 import com.example.board.exception.user.UserAlreadyExistException;
 import com.example.board.exception.user.UserNotAllowedException;
 import com.example.board.exception.user.UserNotFoundException;
+import com.example.board.model.entity.FollowEntity;
 import com.example.board.model.entity.UserEntity;
 import com.example.board.model.user.User;
 import com.example.board.model.user.UserAuthenticationResponse;
 import com.example.board.model.user.UserPatchRequestBody;
+import com.example.board.repository.FollowEntityRepository;
 import com.example.board.repository.UserEntityRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +20,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +31,8 @@ public class UserService implements UserDetailsService {
     private final JwtService jwtService;
 
     private final BCryptPasswordEncoder passwordEncoder;
+
+    private final FollowEntityRepository followEntityRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -93,6 +99,53 @@ public class UserService implements UserDetailsService {
 
 
     }
+
+    public User follow(String username, UserEntity currentUser) {
+        var following = userEntityRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException(username));
+        if (following.equals(currentUser)) {
+            throw new InvalidFollowException("A user cannot follow themselves.");
+        }
+
+
+        if (followEntityRepository.findByFollowerAndFollowing(currentUser, following).isPresent()) {
+            throw new FollowAlreadyExistException();
+        } else{
+            followEntityRepository.save(FollowEntity.of(currentUser, following));
+            following.setFollowersCount(following.getFollowersCount() + 1);
+            currentUser.setFollowingsCount(currentUser.getFollowingsCount()+1);
+
+            userEntityRepository.saveAll(List.of(currentUser, following));
+
+            return User.from(following);
+        }
+
+    }
+
+    public User unfollow(String username, UserEntity currentUser) {
+        var following = userEntityRepository.findByUsername(username).orElseThrow(
+                () -> new UsernameNotFoundException(username));
+        if (following.equals(currentUser)) {
+            throw new InvalidFollowException("A user cannot unfollow themselves.");
+        }
+
+        var followEntity = followEntityRepository.findByFollowerAndFollowing(currentUser, following);
+
+        if (followEntity.isPresent()) {
+
+            followEntityRepository.delete(followEntity.get());
+            following.setFollowersCount(Math.max(0,following.getFollowersCount())-1);
+            currentUser.setFollowingsCount(Math.max(0,currentUser.getFollowingsCount())-1);
+            userEntityRepository.save(currentUser);
+            var savedEntity = userEntityRepository.save(following);
+            return User.from(savedEntity);
+        } else{
+            throw new FollowNotExistException(currentUser,following);
+        }
+
+    }
+
+
 
 
 

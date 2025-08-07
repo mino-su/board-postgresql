@@ -28,6 +28,13 @@ public class PostEntity {
     private String body;
 
     @Column
+    private Long repliesCount = 0L;
+
+    @Column
+    private Long likesCount = 0L;
+
+
+    @Column
     private ZonedDateTime createdDateTime;
 
     @Column
@@ -39,6 +46,9 @@ public class PostEntity {
     @ManyToOne
     @JoinColumn(name="userid")
     private UserEntity user;
+
+
+
 
     public static PostEntity of(String body, UserEntity userEntity) {
         var postEntity = new PostEntity();

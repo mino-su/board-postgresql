@@ -3,7 +3,7 @@ package com.example.board.controller;
 import com.example.board.model.entity.UserEntity;
 import com.example.board.model.post.Post;
 import com.example.board.model.post.PostPostRequestBody;
-import com.example.board.service.JwtService;
+
 import com.example.board.service.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,6 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    private final JwtService jwtService;
 
 
     @GetMapping("")
@@ -64,5 +63,12 @@ public class PostController {
 //        log.info("DELETE /api/v1/posts/{}",postId);
         postService.deletePost(postId, (UserEntity)authentication.getPrincipal());
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{postId}/likes")
+    public ResponseEntity<Post> toggleLike(@PathVariable Long postId, Authentication authentication) {
+
+        var post = postService.toggleLike(postId, (UserEntity) authentication.getPrincipal());
+        return ResponseEntity.ok(post);
     }
 }
